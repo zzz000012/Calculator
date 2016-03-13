@@ -15,10 +15,12 @@ class ViewController: UIViewController {
 
     var userIsInTheMiddleOfTypingNumber: Bool = false
     
+    var brain = CalculatorBrain()
+    
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         
-        println("digit = \(digit)")
+        // println("digit = \(digit)")
         
         if userIsInTheMiddleOfTypingNumber{
             display.text = display.text! + digit
@@ -31,12 +33,13 @@ class ViewController: UIViewController {
     
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
         
         if userIsInTheMiddleOfTypingNumber {
             enter()
         }
-        
+        /*
+        let operation = sender.currentTitle!
+
         switch operation {
         case "✖️":
             // performOperation(multiply)
@@ -50,7 +53,17 @@ class ViewController: UIViewController {
         case "√":
             performOperation{sqrt($0)}
         default: break
+        }*/
+        
+        if let operation = sender.currentTitle{
+            if let result = brain.performOperation(operation){
+                displayValue = result
+            }else{
+                displayValue = 0
+            }
         }
+        
+        
     }
     
     func performOperation(operation: (Double, Double) -> Double) {
@@ -60,12 +73,13 @@ class ViewController: UIViewController {
         }
     }
     
+    /*
     func performOperation(operation: (Double) -> Double) {
         if operandStack.count >= 2 {
             displayValue = operation( operandStack.removeLast())
             enter()
         }
-    }
+    }*/
     
     func multiply (op1: Double, op2: Double) -> Double {
         return op1 * op2
@@ -74,11 +88,18 @@ class ViewController: UIViewController {
     var operandStack = Array<Double>()
     
     @IBAction func enter() {
-        userIsInTheMiddleOfTypingNumber = false
         
+        userIsInTheMiddleOfTypingNumber = false
+        /*
         operandStack.append(displayValue)
         
-        println("operandStack = \(operandStack)")
+        println("operandStack = \(operandStack)")*/
+        
+        if let result = brain.pushOperand(displayValue){
+            displayValue = result
+        }else{
+            displayValue = 0
+        }
     }
     
     var displayValue: Double {
@@ -87,7 +108,7 @@ class ViewController: UIViewController {
         }
         set{
             display.text = "\(newValue)"
-            userIsInTheMiddleOfTypingNumber = false
+            // userIsInTheMiddleOfTypingNumber = false
         }
     }
     
